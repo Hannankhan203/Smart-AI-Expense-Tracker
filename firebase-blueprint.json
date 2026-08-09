@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile document stored in Firestore",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique Firebase user ID" },
+        "fullName": { "type": "string", "description": "User's full name" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "photoURL": { "type": "string", "description": "User profile avatar photo URL" },
+        "createdAt": { "type": "string", "description": "Timestamp of creation" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Income or expense category",
+      "type": "object",
+      "properties": {
+        "categoryId": { "type": "string", "description": "Unique category identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "categoryName": { "type": "string", "description": "Name of the category" },
+        "categoryType": { "type": "string", "enum": ["expense", "income"], "description": "Type of category" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["categoryId", "userId", "categoryName", "categoryType"]
+    },
+    "Income": {
+      "title": "Income",
+      "description": "User income record",
+      "type": "object",
+      "properties": {
+        "incomeId": { "type": "string", "description": "Unique income record identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "title": { "type": "string", "description": "Title or description of income" },
+        "source": { "type": "string", "description": "Source of income (e.g. Salary, Freelance)" },
+        "amount": { "type": "number", "description": "Monetary amount" },
+        "date": { "type": "string", "description": "Date of income" },
+        "notes": { "type": "string", "description": "Additional notes" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["incomeId", "userId", "title", "amount", "date"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "User expense record",
+      "type": "object",
+      "properties": {
+        "expenseId": { "type": "string", "description": "Unique expense record identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "categoryId": { "type": "string", "description": "Associated category ID" },
+        "title": { "type": "string", "description": "Expense title or description" },
+        "amount": { "type": "number", "description": "Monetary expense amount" },
+        "paymentMethod": { "type": "string", "description": "Payment method used (e.g., Credit Card, Cash)" },
+        "description": { "type": "string", "description": "Detailed description" },
+        "expenseDate": { "type": "string", "description": "Date of expense" },
+        "receiptURL": { "type": "string", "description": "URL to receipt image in Storage" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["expenseId", "userId", "title", "amount", "expenseDate"]
+    },
+    "Budget": {
+      "title": "Budget",
+      "description": "Monthly budget limit for a category",
+      "type": "object",
+      "properties": {
+        "budgetId": { "type": "string", "description": "Unique budget identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "categoryId": { "type": "string", "description": "Associated category ID" },
+        "monthlyLimit": { "type": "number", "description": "Maximum spending limit for the month" },
+        "month": { "type": "number", "description": "Month number (1-12)" },
+        "year": { "type": "number", "description": "Year (e.g., 2026)" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["budgetId", "userId", "categoryId", "monthlyLimit", "month", "year"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles indexed by Firebase Auth UID"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Custom income and expense categories per user"
+    },
+    "/income/{incomeId}": {
+      "schema": "Income",
+      "description": "Income records owned by users"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Expense records owned by users"
+    },
+    "/budgets/{budgetId}": {
+      "schema": "Budget",
+      "description": "Monthly category budgets owned by users"
+    }
+  }
+}

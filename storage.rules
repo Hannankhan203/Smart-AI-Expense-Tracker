@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isBelowMaxSize(maxMB) {
+      return request.resource.size < maxMB * 1024 * 1024;
+    }
+
+    // Profile Images: /users/{userId}/profile/{allPaths=**}
+    match /users/{userId}/profile/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isImage() && isBelowMaxSize(5);
+    }
+
+    // Receipt Images: /users/{userId}/receipts/{allPaths=**}
+    match /users/{userId}/receipts/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isImage() && isBelowMaxSize(10);
+    }
+
+    // Fallback Catch-All
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
